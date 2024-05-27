@@ -1,11 +1,18 @@
 const express = require("express");
 const axios = require("axios");
 const dotenv = require("dotenv");
-
+const cors = require("cors");
 dotenv.config();
+
+const corsOptions = {
+  origin: "http://localhost:4200", // Allow requests from this origin
+  methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
+  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+};
 
 const app = express();
 app.use(express.json());
+app.use(cors(corsOptions));
 const QuestionType = {
   choosePair: 0,
   chooseAnswer: 1,
@@ -65,13 +72,13 @@ async function createQuestionChoosePair(content, numberQuestion) {
                   title: brief title of the question;;
                   text: content is "Chọn cặp phù hợp";
                   type: ${QuestionType.choosePair};
-                  answerList: this filed will an array of pair of question and answer corresponding with at least 6 elements
+                  answerList: this filed will an array of pair of question and answer corresponding with 6 elements
                                 format of this fields is array with format of each element is {
                                     text: content of the question (string)
                                     value: content of answer correct corresponding with the filed text above (string)
-                                }
+                                } (Note that these pairs of text and value do not overlap in the filed value, such as {text: "1+10", value: "11"} and {text: "9+2", value: "11"} have the same field value is "11" will be not allowed)
                 }
-              You must return exactly ${numberQuestion} and can only return maximum 10 questions at a time even if I ask for more in the above.
+              You must return exactly ${numberQuestion} questions different and can only return maximum 10 questions at a time even if I ask for more in the above.
               `,
           },
           { role: "user", content: content },
@@ -110,7 +117,7 @@ async function createQuestionChooseToBlank(content, numberQuestion) {
                                 value: this field is the phrase in between the two components text and textBonus to form a question (type string)
                             }, it is only one element with value is correct with the question content, and another must be wrong
                           );
-                  value: this is right answer of this question
+                  value: this is right answer of this question (from array answerList above) (important: this field cannot be null)
                 }
               You must return exactly ${numberQuestion} and can only return maximum 10 questions at a time even if I ask for more in the above.
               `,
