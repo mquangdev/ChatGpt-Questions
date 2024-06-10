@@ -2,6 +2,7 @@ const express = require("express");
 const axios = require("axios");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const home = require("./routes/home");
 dotenv.config();
 
 const corsOptions = {
@@ -13,6 +14,8 @@ const corsOptions = {
 const app = express();
 app.use(express.json());
 app.use(cors(corsOptions));
+// Routes
+app.use("/home", home);
 const QuestionType = {
   choosePair: 0,
   chooseAnswer: 1,
